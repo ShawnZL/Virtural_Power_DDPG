@@ -3,14 +3,13 @@ import numpy as np
 import argparse
 import custom_envs.grid_v0
 from numpy._typing import ArrayLike
-
+""""
 from DDPG.DDPG import DDPG
 from DDPG.utils import create_directory, plot_learning_curve, scale_action
-
 """
 from TD3.TD3 import TD3
 from TD3.utils import create_directory, plot_learning_curve, scale_action
-"""
+
 parser_DDPG = argparse.ArgumentParser("DDPG parameters")
 parser_DDPG.add_argument('--max_episodes', type=int, default=10000)
 parser_DDPG.add_argument('--checkpoint_dir', type=str, default='./checkpoints/DDPG/')
@@ -27,7 +26,7 @@ args_T = parser_TD3.parse_args()
 """
  _state_to_network_input 接受一个元组 state 作为输入，并返回一个包含浮点数的列表 state_list。
 """
-
+"""
 def main_DDPG():
     num_days = 365
     env = gym.make("Grid-v0", max_total_steps = 24 * num_days)
@@ -71,8 +70,8 @@ def main_DDPG():
     plot_learning_curve(episodes, avg_reward_history, title='AvgReward',
                         ylabel='reward', figure_file=args_D.figure_file)
 
-
 """
+
 def main_TD3():
     num_days = 365
     env = gym.make("Grid-v0", max_total_steps = 24 * num_days)
@@ -118,8 +117,8 @@ def main_TD3():
     plot_learning_curve(episodes, avg_reward_history, title='AvgReward',
                         ylabel='reward', figure_file=args_T.figure_file)
 
-"""
+
 
 if __name__ == '__main__':
-    main_DDPG()
-    # main_TD3()
+    # main_DDPG()
+    main_TD3()
