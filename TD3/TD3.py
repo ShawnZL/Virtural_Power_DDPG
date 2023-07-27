@@ -89,9 +89,11 @@ class TD3:
 
     def choose_action(self, observation, train=True):
         observation = _state_to_network_input(observation)
+
         self.actor.eval()
         state = T.tensor([observation], dtype=T.float).to(device)
         action = self.actor.forward(state)
+
         if train:
             # exploration noise
             noise = T.tensor(np.random.normal(loc=0.0, scale=self.action_noise),
