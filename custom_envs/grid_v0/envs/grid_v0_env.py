@@ -89,7 +89,6 @@ class GridV0Env(gym.Env[np.ndarray, Union[int, np.ndarray]]):
 
         action_tuple = (action[0], action[1] - 2, action[2], action[3])
         self.state, reward = self._env.step(action_tuple)
-
         self._step += 1
         terminated = self._step >= self.spec.max_episode_steps
         if self._step > self.spec.max_episode_steps:
@@ -108,7 +107,8 @@ class GridV0Env(gym.Env[np.ndarray, Union[int, np.ndarray]]):
         """
         super().reset(seed=seed)
 
-        start_idx = randint(0, 14600 - self._max_total_steps)
+        # start_idx = randint(0, 14600 - self._max_total_steps)
+        start_idx = 0
         self._env = get_default_microgrid_env(self._data_path, start_idx)
         self.state = None
         self._step = 0

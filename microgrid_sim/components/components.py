@@ -25,6 +25,7 @@ class Components:
 
     def get_hour_of_day(self, idx: int) -> int:
         """Utility wrapper to simplify getting the hour of day."""
+        # print('get_hour_idx {}'.format(idx))
         return self.der.get_hour_of_day(idx)
 
     def get_outdoor_temperature(self, idx: int) -> float:

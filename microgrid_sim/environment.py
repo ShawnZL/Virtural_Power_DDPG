@@ -79,6 +79,7 @@ class Environment:
         )
         self._timestep_counter = count(start_time_idx)
         self._idx = start_time_idx
+        # print('begin time_step{} idx {}'.format(self._timestep_counter, self._idx))
 
     def step(
         self, action: tuple[int, int, int, int]
@@ -88,7 +89,11 @@ class Environment:
 
         Returns state of the environment and reward (generated profit).
         """
-        self._idx = next(self._timestep_counter)
+        # 之前的bug，因为使用next会导致第一次参数没有办法更新
+        # print('before_next idx {} 2 {}'.format(self._idx, next(self._timestep_counter)))
+        # self._idx = next(self._timestep_counter)
+        self._idx += 1
+        print('time_step {} step_idx {}'.format(self._timestep_counter, self._idx))
         tcl_action, price_level = action[0], action[1]
         def_prio = "ESS" if action[2] == 1 else "BUY"
         excess_prio = "ESS" if action[3] == 1 else "SELL"
@@ -140,9 +145,10 @@ class Environment:
         out_temp = self.components.get_outdoor_temperature(self._idx)
         generated_energy = self.components.der.get_generated_energy(self._idx)
         up_price = self.components.main_grid.get_up_price(self._idx)
+        # print('env_get_state {}'.format(self._idx))
         hour_of_day = self.components.get_hour_of_day(self._idx)
+        # print('hour {}'.format(hour_of_day))
         base_res_load = self.components.households_manager.get_base_residential_load(hour_of_day)
-
         state_vector = (
             min(1.0, max(0.0, tcl_soc)),
             min(1.0, max(0.0, ess_soc)),
