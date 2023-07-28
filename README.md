@@ -40,3 +40,49 @@ Energy excess action:[0, 1] 0表示将过剩电力卖出，1表示将过剩电�
 3. 主电网的盈利（main_grid_profit）：这表示主电网根据当前价格水平（price_level）出售电力时的盈利。如果价格水平高，主电网以较高的价格出售电力，其盈利会增加，从而增加奖励；如果价格水平低，主电网以较低的价格出售电力，其盈利会减少，从而减少奖励。
 
 最终，奖励是上述三个部分之和，表示代理（Agent）在当前时间步的总体表现。奖励越高，表示代理在当前状态下做出了更好的决策；奖励越低，表示代理在当前状态下做出了较差的决策。
+
+# Debug
+
+`./microgird_sim/environment` 中
+
+```python
+class Environment:
+    """Environment that the EMS agent interacts with, combining the components together."""
+
+    __slots__ = ("components", "_timestep_counter", "_idx")
+
+    def __init__(self, params_dict: dict[str, dict[str, Any]], prices_and_temps_path: str, start_time_idx: int):
+        tcl_params = params_dict["tcl_params"]
+        ess_params = params_dict["ess_params"]
+        main_grid_params = params_dict["main_grid_params"]
+        der_params = params_dict["der_params"]
+        residential_params = params_dict["residential_params"]
+
+        prices_and_temps = np.load(prices_and_temps_path)
+        residential_params["hourly_base_prices"] = prices_and_temps[:, 0]
+        tcl_params["out_temps"] = prices_and_temps[:, 1]
+
+        self.components = get_components_by_param_dicts(
+            tcl_params, ess_params, main_grid_params, der_params, residential_params
+        )
+        self._timestep_counter = count(start_time_idx)
+        self._idx = start_time_idx
+        # print('begin time_step{} idx {}'.format(self._timestep_counter, self._idx))
+
+    def step(
+        self, action: tuple[int, int, int, int]
+    ) -> tuple[tuple[float, float, float, float, float, float, int, int], float]:
+        """
+        Simulate one timestep with the given control actions.
+
+        Returns state of the environment and reward (generated profit).
+        """
+        # 之前的bug，因为使用next会导致第一次参数没有办法更新
+        # print('before_next idx {} 2 {}'.format(self._idx, next(self._timestep_counter)))
+        # self._idx = next(self._timestep_counter)
+        self._idx += 1
+```
+
+`self._idx = start_time_idx` 为初始设置idx参数
+
+之后在step中，`self._idx = next(self._timestep_counter)` 中 `self._timestep_counter` 由0变为1，但是`_idx` 依旧是0。导致第一次跟0之后的小时状态依旧为0。
