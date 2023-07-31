@@ -107,8 +107,8 @@ class GridV0Env(gym.Env[np.ndarray, Union[int, np.ndarray]]):
         """
         super().reset(seed=seed)
 
-        # start_idx = randint(0, 14600 - self._max_total_steps)
-        start_idx = 0
+        start_idx = randint(0, 14600 - self._max_total_steps)
+        # start_idx = 0
         self._env = get_default_microgrid_env(self._data_path, start_idx)
         self.state = None
         self._step = 0

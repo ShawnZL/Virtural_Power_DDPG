@@ -462,6 +462,20 @@ close 方法用于关闭环境的显示窗口，释放相关资源。
 
 ### households.py
 
+这是一个使用`dataclasses`模块定义数据类（data class）的例子。`dataclasses`模块是Python标准库中的一个模块，用于简化类的定义，自动创建构造函数、属性和其他特殊方法。
+
+在这个例子中，定义了一个名为`ResidentialLoadParams`的数据类，它具有以下属性：
+
+1. `num_households`: 整数类型，表示住户数量。
+2. `hourly_base_prices`: 类型为`ArrayLike`的属性，表示基础的每小时价格。
+3. `base_hourly_loads`: 默认值为`_get_default_base_hourly_loads()`的属性，表示每小时的基础负载。这个默认值通过调用`_get_default_base_hourly_loads()`函数来设置。
+4. `patience`: 元组类型`(int, int)`，默认值为`(10, 6)`，表示耐心的均值和标准差。
+5. `sensitivity`: 元组类型`(float, float)`，默认值为`(0.4, 0.3)`，表示敏感性的均值和标准差。
+6. `price_interval`: 浮点数类型，默认值为`0.0015`，表示价格区间。
+7. `over_pricing_threshold`: 整数类型，默认值为`4`，表示过高定价的阈值。
+
+
+
 这里定义了几个与房屋（Households）相关的类和函数：
 
 1. `PricingManager`：价格管理器，用于跟踪能源价格并验证代理（agent）的价格级别决策。通过`validate_price_level`方法，根据代理给出的价格级别，验证并返回有效的价格级别。实际验证中，价格管理器可根据设定的规则来判断是否采用代理建议的价格级别，或者是否使用预定的特定价格级别。
@@ -515,9 +529,27 @@ close 方法用于关闭环境的显示窗口，释放相关资源。
 
   总的来说，`get_load`方法根据当前的价格水平和时间步骤来调整基本负荷，以响应不同的价格信号，从而实现对负荷的优化。
 
-- `_get_shifted_load_to_execute(current_price_level, current_timestep)`：返回在当前时间步需要执行的负载。它会检查先前添加到列表中的偏移负载，如果到达执行时间（考虑`patience`参数），则从列表中移除并返回执行的负载。
+- 这是一个类中的私有方法`_get_shifted_load_to_execute`，它接受三个整数参数`current_price_level`、`current_timestep`和`current_timestep`，并返回一个浮点数。
 
-- `_execute_load(load, load_timestep, current_timestep, current_price_level)`：根据当前时间步、当前价格级别、负载执行时间和`patience`参数，计算是否在当前时间步执行负载的概率。
+  该方法的功能是计算在当前时刻（`current_timestep`）下应该执行的已经移动过的负荷（shifted load）。在这个方法中，首先将变量`load`初始化为0.0，用于累积可执行的负荷。然后遍历存储在`self._shifted_loads`中的所有已移动过的负荷。
+
+  对于每一个时间步（`timestep`）和对应的移动过的负荷（`shifted_load`），通过调用`self._execute_load()`方法来检查是否应该在当前时间步执行该负荷。如果该负荷可以执行，将其从`self._shifted_loads`中移除，并将其值加到`load`上。
+
+  最后，返回累积的负荷`load`作为方法的返回值。该方法可能用于计算在当前时间步执行的所有已移动过的负荷的总和。
+
+- 这是一个类中的私有方法`_execute_load`，它接受四个参数：`load`是待执行的负荷，`load_timestep`是该负荷被移动的时间步，`current_timestep`是当前时间步，`current_price_level`是当前的价格水平。方法返回一个布尔值，表示是否执行该负荷。
+
+  该方法的功能是根据价格水平和时间差异来决定是否在当前时间步执行负荷。具体步骤如下：
+
+  1. 计算价格项：`price_term = - current_price_level * copysign(1.0, load) / 2`。其中，`current_price_level`是当前价格水平，`copysign(1.0, load)`是一个函数，用于获取`load`的符号，这样可以根据负载的正负来调整价格项的符号。最终，`price_term`表示价格项的值。
+
+  2. 计算时间项：`time_term = (current_timestep - load_timestep) / self.patience`。其中，`current_timestep`是当前时间步，`load_timestep`是负荷被移动的时间步，`self.patience`是类中定义的一个时间参数。`time_term`表示时间项的值，用于考虑负荷的移动时间对执行概率的影响。
+
+  3. 计算执行概率：`exec_prob = min(1.0, max(0.0, price_term + time_term))`。执行概率被限制在区间[0, 1]之间。
+
+  4. 根据执行概率随机决定是否执行负荷：`random() < exec_prob`。`random()`函数返回一个[0, 1)之间的随机浮点数，如果该随机数小于执行概率`exec_prob`，则执行负荷，返回`True`，否则不执行负荷，返回`False`。
+
+  该方法的作用是根据价格水平和负荷的移动时间来随机决定是否在当前时间步执行负荷，从而模拟在电力市场中根据实时价格和负荷需求来执行负荷的行为。
 
 - `_add_new_shifted_load(load, timestep)`：将新的负载偏移添加到要在未来时间步执行的列表中。
 

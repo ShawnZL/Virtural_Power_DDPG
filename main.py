@@ -11,7 +11,7 @@ from TD3.TD3 import TD3
 from TD3.utils import create_directory, plot_learning_curve, scale_action
 """
 parser_DDPG = argparse.ArgumentParser("DDPG parameters")
-parser_DDPG.add_argument('--max_episodes', type=int, default=100000)
+parser_DDPG.add_argument('--max_episodes', type=int, default=40000)
 parser_DDPG.add_argument('--checkpoint_dir', type=str, default='./checkpoints/DDPG/')
 parser_DDPG.add_argument('--figure_file', type=str, default='./output_images/reward_DDPG.png')
 
