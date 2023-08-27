@@ -126,5 +126,17 @@ def main_TD3():
 
 
 if __name__ == '__main__':
+<<<<<<< HEAD
     # main_DDPG()
     main_TD3()
+=======
+    main_DDPG()
+    # main_TD3()
+    '''
+    loadData = np.load('./data/default_price_and_temperatures.npy')
+    print("----shape----")
+    print(loadData.shape)
+    print("----data----")
+    print(loadData)
+    '''
+>>>>>>> f6176446798282c5044776678248090e093e5884
