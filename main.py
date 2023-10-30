@@ -101,7 +101,7 @@ def main_TD3():
             action = agent.choose_action(observation, train=True)
 
             observation_, reward, done, _, _info = env.step(action)
-            # print(observation_, reward, done, _info)
+            print(observation_, action)
             # 这个函数scale_action用于将动作（action）从区间[-1, 1]映射到指定的范围[low, high]。
             # action_ = scale_action(action.copy(), env.action_space.high, env.action_space.low)
 
@@ -126,12 +126,8 @@ def main_TD3():
 
 
 if __name__ == '__main__':
-<<<<<<< HEAD
     # main_DDPG()
     main_TD3()
-=======
-    main_DDPG()
-    # main_TD3()
     '''
     loadData = np.load('./data/default_price_and_temperatures.npy')
     print("----shape----")
@@ -139,4 +135,3 @@ if __name__ == '__main__':
     print("----data----")
     print(loadData)
     '''
->>>>>>> f6176446798282c5044776678248090e093e5884

@@ -20,8 +20,8 @@ def get_default_microgrid_params(path_to_data: str) -> dict[str, dict[str, Any]]
         "thermal_mass_building": (0.3, 0.004),
         "internal_heating": (0.0, 0.01),
         "nominal_power": (1.5, 0.01),
-        "min_temp": 19.0,
-        "max_temp": 25.0,
+        "min_temp": 26.0,
+        "max_temp": 28.0,
     }
     ess_params = {
         "charge_efficiency": 0.9,
@@ -104,6 +104,7 @@ class Environment:
     def _get_tcl_energy(self, tcl_action: int) -> float:
         """Returns energy amount from options {0%, 33%, 67%, 100%} of the max consumption."""
         max_cons = self.components.tcl_aggregator.get_number_of_tcls() * 1.5
+        print(f'tcl_action{tcl_action}')
         return max_cons * tcl_action / 3
 
     def _apply_action(self, tcl_action: int, price_level: int, deficiency_prio: str, excess_prio: str) -> float:

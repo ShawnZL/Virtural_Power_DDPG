@@ -51,17 +51,19 @@ class TCLTemperatureModel:
         :return: New indoor temperature.
         """
         self._out_temp = out_temp
-        new_in_temp = self._get_new_in_temp(tcl_heating)
-        new_building_temp = self._get_new_building_temp()
+        new_in_temp = self._get_new_in_temp(tcl_heating) # 计算新的室内温度
+        new_building_temp = self._get_new_building_temp() # 计算新的建筑温度
 
         self.in_temp = new_in_temp
         self._building_temp = new_building_temp
+        print(f'heating/cooling{tcl_heating} and new_temperature{new_in_temp}')
         return new_in_temp
 
     def _get_new_in_temp(self, tcl_heating: float) -> float:
         assert self._therm_mass_air > 0
-        air_comp = (self._out_temp - self.in_temp) * self._therm_mass_air
-        building_comp = - self._get_building_temp_change()
+        air_comp = (self._out_temp - self.in_temp) * self._therm_mass_air # 室内温度变化
+        building_comp = - self._get_building_temp_change() # 建筑温度变化
+        # tcl_heat给予的温度控制
         return self.in_temp + air_comp + building_comp + tcl_heating + self._building_heating
 
     def _get_new_building_temp(self) -> float:
